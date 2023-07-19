@@ -11,6 +11,14 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     slider.render();
 
+    const moduleSlider = new MainSlider({
+        container: '.moduleapp', 
+        btns: '.next',
+        prev: '.prevmodule',
+        next: '.nextmodule'
+    });
+    moduleSlider.render();
+
     const showUpSlider = new MiniSlider({
         container: '.showup__content-slider',
         prev: '.showup__prev',
@@ -40,9 +48,6 @@ window.addEventListener('DOMContentLoaded', () => {
     
     const player = new VideoPlayer('.showup .play', '.overlay');
     player.init();
-
-    const playerSecond = new VideoPlayer('.module__video-item .play', '.overlay');
-    playerSecond.init();
 
     new Difference('.officerold', '.officer__card-item').init();
     new Difference('.officernew', '.officer__card-item').init();

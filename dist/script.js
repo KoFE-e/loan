@@ -5137,6 +5137,13 @@ window.addEventListener('DOMContentLoaded', function () {
     btns: '.next'
   });
   slider.render();
+  var moduleSlider = new _modules_slider_slider_main__WEBPACK_IMPORTED_MODULE_1__["default"]({
+    container: '.moduleapp',
+    btns: '.next',
+    prev: '.prevmodule',
+    next: '.nextmodule'
+  });
+  moduleSlider.render();
   var showUpSlider = new _modules_slider_slider_mini__WEBPACK_IMPORTED_MODULE_2__["default"]({
     container: '.showup__content-slider',
     prev: '.showup__prev',
@@ -5163,8 +5170,6 @@ window.addEventListener('DOMContentLoaded', function () {
   feedSlider.init();
   var player = new _modules_playVideo__WEBPACK_IMPORTED_MODULE_0__["default"]('.showup .play', '.overlay');
   player.init();
-  var playerSecond = new _modules_playVideo__WEBPACK_IMPORTED_MODULE_0__["default"]('.module__video-item .play', '.overlay');
-  playerSecond.init();
   new _modules_difference__WEBPACK_IMPORTED_MODULE_3__["default"]('.officerold', '.officer__card-item').init();
   new _modules_difference__WEBPACK_IMPORTED_MODULE_3__["default"]('.officernew', '.officer__card-item').init();
   new _modules_forms__WEBPACK_IMPORTED_MODULE_4__["default"]('form').init();
@@ -5625,10 +5630,10 @@ var MainSlider =
 function (_Slider) {
   _inherits(MainSlider, _Slider);
 
-  function MainSlider(btns) {
+  function MainSlider(btns, next, prev) {
     _classCallCheck(this, MainSlider);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(MainSlider).call(this, btns));
+    return _possibleConstructorReturn(this, _getPrototypeOf(MainSlider).call(this, btns, next, prev));
   }
 
   _createClass(MainSlider, [{
@@ -5657,9 +5662,7 @@ function (_Slider) {
         } else {
           this.hanson.classList.remove('slideInUp');
         }
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
 
       this.slides.forEach(function (slide) {
         slide.style.display = "none";
@@ -5673,30 +5676,53 @@ function (_Slider) {
       this.showSlides(this.slideIndex += n);
     }
   }, {
-    key: "render",
-    value: function render() {
+    key: "bindTriggers",
+    value: function bindTriggers() {
       var _this2 = this;
 
-      try {
+      this.btns.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+
+          _this2.plusSlides(1);
+        });
+        btn.parentNode.previousElementSibling.addEventListener('click', function (e) {
+          e.preventDefault();
+          _this2.slideIndex = 1;
+
+          _this2.showSlides(_this2.slideIndex);
+        });
+      });
+      this.prev.forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          _this2.plusSlides(-1);
+        });
+      });
+      this.next.forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          _this2.plusSlides(1);
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (this.container) {
         try {
           this.hanson = document.querySelector('.hanson');
         } catch (e) {
           console.log(e);
         }
 
-        this.btns.forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            _this2.plusSlides(1);
-          });
-          btn.parentNode.previousElementSibling.addEventListener('click', function (e) {
-            e.preventDefault();
-            _this2.slideIndex = 1;
-
-            _this2.showSlides(_this2.slideIndex);
-          });
-        });
+        this.bindTriggers();
         this.showSlides(this.slideIndex);
-      } catch (e) {}
+      }
     }
   }]);
 
@@ -5804,11 +5830,9 @@ function (_Slider) {
     key: "nextSlide",
     value: function nextSlide() {
       if (this.slides[1].tagName == "BUTTON" && this.slides[2].tagName == "BUTTON") {
-        this.container.appendChild(this.slides[0]); // Slide
-
-        this.container.appendChild(this.slides[1]); // Btn
-
-        this.container.appendChild(this.slides[2]); // Btn
+        for (var i = 0; i < 3; i++) {
+          this.container.appendChild(this.slides[0]);
+        }
 
         this.decorizeSlides();
       } else if (this.slides[1].tagName == "BUTTON") {
@@ -5827,29 +5851,33 @@ function (_Slider) {
     value: function bindTriggers() {
       var _this2 = this;
 
-      this.next.addEventListener('click', function () {
-        if (_this2.autoplay) {
-          clearInterval(_this2.timer);
-        }
-
-        _this2.nextSlide();
-      });
-      this.prev.addEventListener('click', function () {
-        if (_this2.autoplay) {
-          clearInterval(_this2.timer);
-        }
-
-        for (var i = _this2.slides.length - 1; i > 0; i--) {
-          if (_this2.slides[i].tagName !== "BUTTON") {
-            var active = _this2.slides[i];
-
-            _this2.container.insertBefore(active, _this2.slides[0]);
-
-            _this2.decorizeSlides();
-
-            break;
+      this.next.forEach(function (item) {
+        item.addEventListener('click', function () {
+          if (_this2.autoplay) {
+            clearInterval(_this2.timer);
           }
-        }
+
+          _this2.nextSlide();
+        });
+      });
+      this.prev.forEach(function (item) {
+        item.addEventListener('click', function () {
+          if (_this2.autoplay) {
+            clearInterval(_this2.timer);
+          }
+
+          for (var i = _this2.slides.length - 1; i > 0; i--) {
+            if (_this2.slides[i].tagName !== "BUTTON") {
+              var active = _this2.slides[i];
+
+              _this2.container.insertBefore(active, _this2.slides[0]);
+
+              _this2.decorizeSlides();
+
+              break;
+            }
+          }
+        });
       });
     }
   }, {
@@ -5917,8 +5945,8 @@ var Slider = function Slider() {
   } catch (e) {}
 
   this.btns = document.querySelectorAll(btns);
-  this.prev = document.querySelector(prev);
-  this.next = document.querySelector(next);
+  this.prev = document.querySelectorAll(prev);
+  this.next = document.querySelectorAll(next);
   this.activeClass = activeClass;
   this.animate = animate;
   this.autoplay = autoplay;

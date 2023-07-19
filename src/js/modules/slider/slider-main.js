@@ -1,8 +1,8 @@
 import Slider from "./slider";
 
 export default class MainSlider extends Slider {
-    constructor(btns) {
-        super(btns);
+    constructor(btns, next, prev) {
+        super(btns, next, prev);
     }
 
     showSlides(n) {
@@ -26,9 +26,7 @@ export default class MainSlider extends Slider {
             } else {
                 this.hanson.classList.remove('slideInUp');
             }
-        } catch(e) {
-            console.log(e);
-        }
+        } catch(e) {}
     
         this.slides.forEach(slide => {
             slide.style.display = "none";
@@ -42,28 +40,48 @@ export default class MainSlider extends Slider {
         this.showSlides(this.slideIndex += n);
     }
 
+    bindTriggers() {
+        this.btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.plusSlides(1);
+            });
+
+            btn.parentNode.previousElementSibling.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.slideIndex = 1;
+                this.showSlides(this.slideIndex);
+            });
+        });
+
+        this.prev.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.plusSlides(-1);
+            });
+        });
+
+        this.next.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.plusSlides(1);
+            });
+        });
+    }
+
     render() {
-        try {
+        if (this.container) {
             try {
                 this.hanson = document.querySelector('.hanson');
             } catch(e) {
                 console.log(e);
             }
             
-            this.btns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    this.plusSlides(1);
-                });
-    
-                btn.parentNode.previousElementSibling.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.slideIndex = 1;
-                    this.showSlides(this.slideIndex);
-                });
-            });
-    
+            this.bindTriggers();
             this.showSlides(this.slideIndex);
-        } catch(e) {}
+        }
         
     }
 }
